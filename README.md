@@ -1,4 +1,4 @@
-# ai-learning
+# AI Learning
 
 All about AI Learning for self upskill, covering Agent, RAG and Fine Tuning relevant to AI/LLM, and also try to build something through learning.
 
@@ -6,11 +6,11 @@ All about AI Learning for self upskill, covering Agent, RAG and Fine Tuning rele
 
 ### Overview
 
-### Agent - Workflow
+### Agent - Orchestration
 
 ### Agent - Tools
 
-### Agent - LLM 
+### Agent - Model 
 
 
 ## RAG and Fine Tuning
@@ -38,3 +38,7 @@ All about AI Learning for self upskill, covering Agent, RAG and Fine Tuning rele
 
 - [Andrej Karpathy: Software Is Changing (Again)](https://www.youtube.com/watch?v=LCEmiRjPEtQ)
 - [Andrej Karpathy: How I use LLMs](https://www.youtube.com/watch?v=EWvNQjAaOHw)
+
+### Blogs
+
+- https://simonwillison.net/
