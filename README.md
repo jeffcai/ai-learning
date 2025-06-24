@@ -29,11 +29,11 @@ All about AI Learning for self upskill, covering Agent, RAG and Fine Tuning rele
 
 ### Articles
 
-- [Agents: Authors: Julia Wiesinger, Patrick Marlow and Vladimir Vuskovic](https://drive.google.com/file/d/1oEjiRCTbd54aSdB_eEe3UShxLBWK9xkt/view?pli=1)
-- [Building effective agents](https://www.anthropic.com/engineering/building-effective-agents)
-- [How we built our multi-agent research system](https://www.anthropic.com/engineering/built-multi-agent-research-system)
-- [A practical guide to building agents](https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf)
-- [Writing an LLM from scratch](https://www.gilesthomas.com/llm-from-scratch)
+- [Agents: Authors: Julia Wiesinger, Patrick Marlow and Vladimir Vuskovic](https://drive.google.com/file/d/1oEjiRCTbd54aSdB_eEe3UShxLBWK9xkt/view?pli=1) - Google whitepater
+- [Building effective agents](https://www.anthropic.com/engineering/building-effective-agents) by Anthropic
+- [How we built our multi-agent research system](https://www.anthropic.com/engineering/built-multi-agent-research-system) by Anthropic
+- [A practical guide to building agents](https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf) by OpenAI
+- [Writing an LLM from scratch](https://www.gilesthomas.com/llm-from-scratch) - personal blog series, relevant to the book above (build a large language model from scratch)
 
 ### Videos
 
