@@ -1,0 +1,31 @@
+# Core Hugging Face library
+huggingface_hub>=0.20.0
+
+# Environment variable management
+python-dotenv>=1.0.0
+
+# HTTP requests (if needed for custom API calls)
+requests>=2.31.0
+
+# Async support (included with Python 3.7+, but specifying for clarity)
+aiohttp>=3.9.0
+
+# Optional: For enhanced text processing
+numpy>=1.24.0
+pandas>=2.0.0
+
+# Optional: For pretty printing and formatting
+rich>=13.0.0
+colorama>=0.4.6
+
+# Optional: For configuration management
+pydantic>=2.0.0
+
+# Optional: For logging
+loguru>=0.7.0
+
+# Development dependencies (optional)
+pytest>=7.4.0
+black>=23.0.0
+flake8>=6.0.0
+mypy>=1.5.0

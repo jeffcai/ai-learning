@@ -2,6 +2,17 @@
 
 All about AI Learning for self upskill, covering Agent, RAG and Fine Tuning relevant to AI/LLM, and also try to build something through learning.
 
+## Run the demo
+
+make sure python and required libraries installed
+
+```
+export HF_TOKEN=xxxxx // replace with your own HF token
+python3 -m venv venv
+source venv/bin/activate
+pip3 install -r requirements.txt
+```
+
 ## Agent - Architecture and Implementations
 
 ### Overview
