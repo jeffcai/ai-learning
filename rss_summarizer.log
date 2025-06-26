@@ -1,0 +1,27 @@
+2025-06-26 13:28:40,992 - INFO - Starting daily article processing...
+2025-06-26 13:28:40,993 - INFO - Fetching feed: https://feeds.bbci.co.uk/news/rss.xml
+2025-06-26 13:28:41,629 - INFO - Fetching feed: https://rss.cnn.com/rss/edition.rss
+2025-06-26 13:28:42,765 - ERROR - Error fetching feed https://rss.cnn.com/rss/edition.rss: HTTPSConnectionPool(host='rss.cnn.com', port=443): Max retries exceeded with url: /rss/edition.rss (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1028)')))
+2025-06-26 13:28:42,765 - INFO - Fetching feed: https://feeds.reuters.com/reuters/topNews
+2025-06-26 13:28:42,941 - ERROR - Error fetching feed https://feeds.reuters.com/reuters/topNews: HTTPSConnectionPool(host='feeds.reuters.com', port=443): Max retries exceeded with url: /reuters/topNews (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1028)')))
+2025-06-26 13:28:42,942 - INFO - Fetching feed: https://techcrunch.com/feed/
+2025-06-26 13:28:44,422 - ERROR - Error in daily processing: can't compare offset-naive and offset-aware datetimes
+2025-06-26 13:28:44,422 - INFO - Scheduler started. Press Ctrl+C to stop.
+2025-06-26 13:29:08,542 - INFO - Scheduler stopped by user
+2025-06-26 13:29:16,462 - INFO - Starting daily article processing...
+2025-06-26 13:29:16,462 - INFO - Fetching feed: https://feeds.bbci.co.uk/news/rss.xml
+2025-06-26 13:29:16,856 - INFO - Fetching feed: https://rss.cnn.com/rss/edition.rss
+2025-06-26 13:29:17,133 - ERROR - Error fetching feed https://rss.cnn.com/rss/edition.rss: HTTPSConnectionPool(host='rss.cnn.com', port=443): Max retries exceeded with url: /rss/edition.rss (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1028)')))
+2025-06-26 13:29:17,133 - INFO - Fetching feed: https://feeds.reuters.com/reuters/topNews
+2025-06-26 13:29:17,247 - ERROR - Error fetching feed https://feeds.reuters.com/reuters/topNews: HTTPSConnectionPool(host='feeds.reuters.com', port=443): Max retries exceeded with url: /reuters/topNews (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1028)')))
+2025-06-26 13:29:17,247 - INFO - Fetching feed: https://techcrunch.com/feed/
+2025-06-26 13:29:17,602 - ERROR - Error in daily processing: can't compare offset-naive and offset-aware datetimes
+2025-06-26 13:29:17,603 - INFO - Scheduler started. Press Ctrl+C to stop.
+2025-06-26 13:29:20,318 - INFO - Scheduler stopped by user
+2025-06-26 13:31:10,510 - INFO - Starting daily article processing...
+2025-06-26 13:31:10,510 - INFO - Fetching feed: https://feeds.bbci.co.uk/news/rss.xml
+2025-06-26 13:31:10,789 - INFO - Fetched 42 articles
+2025-06-26 13:31:39,941 - INFO - Processed 42 articles
+2025-06-26 13:31:39,943 - INFO - Generated daily digest with 42 articles
+2025-06-26 13:31:39,943 - INFO - Scheduler started. Press Ctrl+C to stop.
+2025-06-26 13:32:07,684 - INFO - Scheduler stopped by user

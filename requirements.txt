@@ -29,3 +29,17 @@ pytest>=7.4.0
 black>=23.0.0
 flake8>=6.0.0
 mypy>=1.5.0
+
+# rss reader
+feedparser>=6.0.10
+requests>=2.31.0
+beautifulsoup4>=4.12.2
+newspaper3k>=0.2.8
+# sqlite3  # Built-in with Python
+schedule>=1.2.0
+openai>=1.0.0  # Optional: for OpenAI API
+transformers>=4.35.0  # Optional: for local models
+torch>=2.0.0  # Optional: for local models
+python-dateutil>=2.8.2
+lxml[html_clean]>=4.9.3
+# Or use: lxml_html_clean>=0.1.0
