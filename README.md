@@ -33,10 +33,12 @@ pip3 install -r requirements.txt
 ### Books
 
 - [https://www.manning.com/books/build-a-large-language-model-from-scratch](https://www.manning.com/books/build-a-large-language-model-from-scratch)
+- (Generative Model)[https://book.douban.com/subject/37383541/]
 
 ### Courses
 
 - [Hugging Face: Agents Course](https://huggingface.co/learn/agents-course/unit1/introduction)
+- [从零开始的大语言模型原理与实践教程](datawhalechina.github.io/happy-llm/)
 
 ### Articles
 
