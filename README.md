@@ -56,3 +56,7 @@ pip3 install -r requirements.txt
 ### Blogs
 
 - https://simonwillison.net/
+
+### Agents
+
+- [Trae Agent is an LLM-based agent for general purpose software engineering tasks](https://github.com/bytedance/trae-agent)
