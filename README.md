@@ -32,8 +32,9 @@ pip3 install -r requirements.txt
 
 ### Books
 
-- [https://www.manning.com/books/build-a-large-language-model-from-scratch](https://www.manning.com/books/build-a-large-language-model-from-scratch)
-- (Generative Model)[https://book.douban.com/subject/37383541/]
+- [Build a large language model from scratch](https://www.manning.com/books/build-a-large-language-model-from-scratch)
+- [Generative Model](https://book.douban.com/subject/37383541/)
+- [LLM Inference in Production](https://bentoml.com/llm/)
 
 ### Courses
 

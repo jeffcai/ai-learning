@@ -46,3 +46,8 @@ lxml[html_clean]>=4.9.3
 # Add for OPML parsing
 pytz>=2023.3
 opml>=0.5
+
+# HF agent course
+smolagents>=1.20.0
+huggingface_hub>=0.33.1
+duckduckgo-search>=4.0.0
