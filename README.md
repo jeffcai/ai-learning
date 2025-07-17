@@ -13,6 +13,35 @@ source venv/bin/activate
 pip3 install -r requirements.txt
 ```
 
+### Troubleshooting
+
+To bypass the firewall, you may need to run script as shown below (depends you use which type of proxy for https/http proxy):
+
+```
+export https_proxy=http://127.0.0.1:7890 http_proxy=http://127.0.0.1:7890 all_proxy=socks5://127.0.0.1:7890
+```
+
+Due to limit credits, may having error below when ruuning HuggingFace 
+> You have exceeded your monthly included credits for Inference Providers. Subscribe to PRO to get 20x more monthly included credits.
+
+
+To run local model, refer to two blogs coming from Simon Willison for installing llm, llm-mlx and downloading/running:
+- [Run LLMs on macOS using llm-mlx and Apple’s MLX framework](https://simonwillison.net/2025/Feb/15/llm-mlx/)
+- [Qwen3-8B](https://simonwillison.net/2025/May/2/qwen3-8b/)
+
+```
+pip3 install llm
+llm install llm-mlx
+llm mlx download-model mlx-community/Qwen3-8B-4bit
+llm aliases set q3 mlx-community/Qwen3-8B-4bit
+llm models options set q3 unlimited 1
+```
+
+for locating model, please refer to Simon's description below:
+
+> This pulls 4.3GB of data and saves it to ~/.cache/huggingface/hub/models--mlx-community--Qwen3-8B-4bit.
+
+
 ## Agent - Architecture and Implementations
 
 ### Overview
