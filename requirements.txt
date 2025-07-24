@@ -55,3 +55,8 @@ duckduckgo-search>=4.0.0
 llama-index>=0.10.0
 llama-index-llms-huggingface-api>=0.1.0
 llama-index-embeddings-huggingface>=0.1.0
+
+llm
+
+openai
+httpx[socks]>=0.25.0

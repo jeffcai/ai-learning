@@ -6,8 +6,22 @@ All about AI Learning for self upskill, covering Agent, RAG and Fine Tuning rele
 
 make sure python and required libraries installed
 
+create and edit the .env as below at the root of the project, for configuring API keys:
+
 ```
-export HF_TOKEN=xxxxx // replace with your own HF token
+# Alibaba Cloud DashScope API Key
+# Get your API key from: https://help.aliyun.com/zh/model-studio/developer-reference/get-api-key
+DASHSCOPE_API_KEY=your-api-key-here
+
+# OpenAI API Key (if needed)
+OPENAI_API_KEY=your-openai-api-key-here
+
+# Hugging Face API Key (if needed)
+HUGGINGFACE_API_KEY=your-hf-api-key-here
+```
+
+```
+export HF_TOKEN=xxx (it's legacy, will remove it latter, to use the key in .env above)
 python3 -m venv venv
 source venv/bin/activate
 pip3 install -r requirements.txt
@@ -72,6 +86,7 @@ for locating model, please refer to Simon's description below:
 
 ### Articles
 
+- [【LLM 新手入門】2025 年如何自學 LLM](https://axk51013.medium.com/llm-%E6%96%B0%E6%89%8B%E5%85%A5%E9%96%80-2025-%E5%B9%B4%E5%A6%82%E4%BD%95%E8%87%AA%E5%AD%B8-llm-a0de380d78eb)
 - [Agents: Authors: Julia Wiesinger, Patrick Marlow and Vladimir Vuskovic](https://drive.google.com/file/d/1oEjiRCTbd54aSdB_eEe3UShxLBWK9xkt/view?pli=1) - Google whitepater
 - [Building effective agents](https://www.anthropic.com/engineering/building-effective-agents) by Anthropic
 - [How we built our multi-agent research system](https://www.anthropic.com/engineering/built-multi-agent-research-system) by Anthropic
