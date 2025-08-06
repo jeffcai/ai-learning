@@ -58,6 +58,9 @@ class MapPointBase(BaseModel):
     latitude: float
     longitude: float
     address: Optional[str] = None
+    city: Optional[str] = None
+    country: Optional[str] = None
+    place_id: Optional[str] = None
     opening_hours: Optional[str] = None
     contact_info: Optional[str] = None
     image_url: Optional[str] = None
@@ -65,9 +68,35 @@ class MapPointBase(BaseModel):
     priority: Optional[int] = 1
     instagram_worthy: Optional[bool] = False
     ar_content_url: Optional[str] = None
+    canvas_x: Optional[float] = None
+    canvas_y: Optional[float] = None
+    created_by: Optional[str] = None
+    is_verified: Optional[bool] = False
 
 class MapPointCreate(MapPointBase):
     pass
+
+class MapPointUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    point_type: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    address: Optional[str] = None
+    city: Optional[str] = None
+    country: Optional[str] = None
+    place_id: Optional[str] = None
+    opening_hours: Optional[str] = None
+    contact_info: Optional[str] = None
+    image_url: Optional[str] = None
+    icon_type: Optional[str] = None
+    priority: Optional[int] = None
+    instagram_worthy: Optional[bool] = None
+    ar_content_url: Optional[str] = None
+    canvas_x: Optional[float] = None
+    canvas_y: Optional[float] = None
+    created_by: Optional[str] = None
+    is_verified: Optional[bool] = None
 
 class MapPointResponse(MapPointBase):
     id: int
@@ -75,6 +104,15 @@ class MapPointResponse(MapPointBase):
 
     class Config:
         from_attributes = True
+
+class MapPointSearchRequest(BaseModel):
+    city: str
+    country: Optional[str] = None
+    point_type: Optional[str] = None
+    search_query: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    radius_km: Optional[float] = 5.0
 
 
 class MapRouteBase(BaseModel):
@@ -187,4 +225,40 @@ class MapListResponse(BaseModel):
     total_pages: int
 
 class MapDetailResponse(MapResponse):
+    reviews: List[MapReviewResponse] = []
+
+
+# Hand-drawn canvas schemas
+class HandDrawnCanvasBase(BaseModel):
+    canvas_data: str  # JSON string of canvas drawing data
+    canvas_width: Optional[int] = 800
+    canvas_height: Optional[int] = 600
+    background_image_url: Optional[str] = None
+    drawing_layers: Optional[str] = None
+
+class HandDrawnCanvasCreate(HandDrawnCanvasBase):
+    pass
+
+class HandDrawnCanvasUpdate(BaseModel):
+    canvas_data: Optional[str] = None
+    canvas_width: Optional[int] = None
+    canvas_height: Optional[int] = None
+    background_image_url: Optional[str] = None
+    drawing_layers: Optional[str] = None
+
+class HandDrawnCanvasResponse(HandDrawnCanvasBase):
+    id: int
+    map_id: int
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
+# Extended map schemas with canvas
+class MapWithCanvasResponse(MapResponse):
+    canvas: Optional[HandDrawnCanvasResponse] = None
+
+class MapDetailWithCanvasResponse(MapWithCanvasResponse):
     reviews: List[MapReviewResponse] = []

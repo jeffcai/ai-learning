@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { MapDetailResponse, mapsService } from '@/services/api'
 import MapLegend from '@/components/MapLegend'
+import HandDrawnMapDisplay from '@/components/HandDrawnMapDisplay'
 import '@/styles/leaflet-custom.css'
 
 // Dynamically import MapDisplay to avoid SSR issues with Leaflet
@@ -110,6 +111,26 @@ export default function MapDetailPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Main Content */}
             <div className="lg:col-span-2">
+              {/* Hand-drawn Canvas */}
+              {map.canvas && (
+                <div className="bg-white rounded-lg shadow-md mb-6 overflow-hidden">
+                  <div className="p-4 border-b border-gray-200">
+                    <h2 className="text-xl font-bold text-gray-900">Hand-drawn Map</h2>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Original artistic map with custom routes and points of interest
+                    </p>
+                  </div>
+                  <div className="p-4">
+                    <HandDrawnMapDisplay 
+                      canvas={map.canvas}
+                      width={map.canvas.canvas_width}
+                      height={map.canvas.canvas_height}
+                      className="w-full"
+                    />
+                  </div>
+                </div>
+              )}
+
               {/* Interactive Map */}
               <div className="bg-white rounded-lg shadow-md mb-6 overflow-hidden">
                 <div className="p-4 border-b border-gray-200">

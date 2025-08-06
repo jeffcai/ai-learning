@@ -65,6 +65,7 @@ class Map(Base):
     points = relationship("MapPoint", secondary=map_points, back_populates="maps")
     routes = relationship("MapRoute", back_populates="map", cascade="all, delete-orphan")
     reviews = relationship("MapReview", back_populates="map", cascade="all, delete-orphan")
+    canvas = relationship("HandDrawnCanvas", back_populates="map", uselist=False, cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Map(title='{self.title}', city='{self.city}', category='{self.category}')>"
@@ -80,6 +81,9 @@ class MapPoint(Base):
     latitude = Column(Float, nullable=False)
     longitude = Column(Float, nullable=False)
     address = Column(String(300))
+    city = Column(String(100))  # City where the point is located
+    country = Column(String(100))  # Country where the point is located
+    place_id = Column(String(200))  # Google Places ID or similar external reference
     opening_hours = Column(String(200))
     contact_info = Column(String(200))
     image_url = Column(String(500))
@@ -87,13 +91,17 @@ class MapPoint(Base):
     priority = Column(Integer, default=1)  # 1=high, 2=medium, 3=low
     instagram_worthy = Column(Boolean, default=False)  # For social media content
     ar_content_url = Column(String(500))  # AR filter/content link
+    canvas_x = Column(Float)  # X coordinate on hand-drawn canvas (optional)
+    canvas_y = Column(Float)  # Y coordinate on hand-drawn canvas (optional)
+    created_by = Column(String(100))  # User who created this point
+    is_verified = Column(Boolean, default=False)  # Whether the point has been verified
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     
     # Relationships
     maps = relationship("Map", secondary=map_points, back_populates="points")
 
     def __repr__(self):
-        return f"<MapPoint(name='{self.name}', type='{self.point_type}')>"
+        return f"<MapPoint(name='{self.name}', type='{self.point_type}', lat={self.latitude}, lng={self.longitude})>"
 
 
 class MapRoute(Base):
@@ -143,3 +151,23 @@ class MapReview(Base):
 
     def __repr__(self):
         return f"<MapReview(rating={self.rating}, reviewer='{self.reviewer_name}')>"
+
+
+class HandDrawnCanvas(Base):
+    __tablename__ = "hand_drawn_canvas"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    map_id = Column(Integer, ForeignKey('maps.id'), nullable=False)
+    canvas_data = Column(Text, nullable=False)  # JSON string of canvas drawing data
+    canvas_width = Column(Integer, default=800)
+    canvas_height = Column(Integer, default=600)
+    background_image_url = Column(String(500))  # Optional background map image
+    drawing_layers = Column(Text)  # JSON string of different drawing layers
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
+    # Relationships
+    map = relationship("Map", back_populates="canvas")
+
+    def __repr__(self):
+        return f"<HandDrawnCanvas(map_id={self.map_id}, canvas_size={self.canvas_width}x{self.canvas_height})>"

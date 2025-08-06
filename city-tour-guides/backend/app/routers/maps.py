@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session, joinedload
 from typing import List, Optional
+import math
 from app.database import get_db
 from app import models, schemas
 import math
@@ -76,20 +77,17 @@ async def get_maps(
         total_pages=total_pages
     )
 
-@router.get("/{map_id}", response_model=schemas.MapDetailResponse)
+@router.get("/{map_id}", response_model=schemas.MapDetailWithCanvasResponse)
 async def get_map(map_id: int, db: Session = Depends(get_db)):
-    """Get detailed information about a specific map"""
+    """Get map details by ID with canvas data"""
     
-    # Use eager loading for all relationships including reviews
     map_obj = db.query(models.Map).options(
         joinedload(models.Map.points),
         joinedload(models.Map.routes).joinedload(models.MapRoute.start_point),
         joinedload(models.Map.routes).joinedload(models.MapRoute.end_point),
-        joinedload(models.Map.reviews)
-    ).filter(
-        models.Map.id == map_id,
-        models.Map.is_active == True
-    ).first()
+        joinedload(models.Map.reviews),
+        joinedload(models.Map.canvas)
+    ).filter(models.Map.id == map_id).first()
     
     if not map_obj:
         raise HTTPException(
@@ -97,12 +95,7 @@ async def get_map(map_id: int, db: Session = Depends(get_db)):
             detail="Map not found"
         )
     
-    # Increment download count
-    map_obj.download_count += 1
-    db.commit()
-    db.refresh(map_obj)
-    
-    return schemas.MapDetailResponse.model_validate(map_obj)
+    return map_obj
 
 @router.post("/", response_model=schemas.MapResponse, status_code=status.HTTP_201_CREATED)
 async def create_map(map_data: schemas.MapCreate, db: Session = Depends(get_db)):
@@ -197,6 +190,145 @@ async def create_map_point(point_data: schemas.MapPointCreate, db: Session = Dep
     db.commit()
     db.refresh(db_point)
     return db_point
+
+@router.get("/points/search", response_model=List[schemas.MapPointResponse])
+async def search_map_points_by_filters(
+    city: Optional[str] = Query(None, description="Filter by city"),
+    country: Optional[str] = Query(None, description="Filter by country"),
+    point_type: Optional[str] = Query(None, description="Filter by point type"),
+    instagram_worthy: Optional[bool] = Query(None, description="Filter Instagram-worthy spots"),
+    latitude: Optional[float] = Query(None, description="Latitude for proximity search"),
+    longitude: Optional[float] = Query(None, description="Longitude for proximity search"),
+    radius_km: Optional[float] = Query(5.0, description="Search radius in kilometers"),
+    page: int = Query(1, ge=1, description="Page number"),
+    per_page: int = Query(50, ge=1, le=100, description="Items per page"),
+    db: Session = Depends(get_db)
+):
+    """Get map points with optional filtering and proximity search"""
+    
+    query = db.query(models.MapPoint)
+    
+    # Apply filters
+    if city:
+        query = query.filter(models.MapPoint.city.ilike(f"%{city}%"))
+    if country:
+        query = query.filter(models.MapPoint.country.ilike(f"%{country}%"))
+    if point_type:
+        query = query.filter(models.MapPoint.point_type == point_type)
+    if instagram_worthy is not None:
+        query = query.filter(models.MapPoint.instagram_worthy == instagram_worthy)
+    
+    # Proximity search (simplified - for production use PostGIS)
+    if latitude is not None and longitude is not None and radius_km is not None:
+        # Simple bounding box search
+        lat_delta = radius_km / 111.0  # Rough conversion
+        lng_delta = radius_km / (111.0 * math.cos(math.radians(latitude)))
+        
+        query = query.filter(
+            models.MapPoint.latitude.between(latitude - lat_delta, latitude + lat_delta),
+            models.MapPoint.longitude.between(longitude - lng_delta, longitude + lng_delta)
+        )
+    
+    # Pagination
+    offset = (page - 1) * per_page
+    points = query.offset(offset).limit(per_page).all()
+    
+    return points
+
+@router.get("/points/{point_id}", response_model=schemas.MapPointResponse)
+async def get_map_point(point_id: int, db: Session = Depends(get_db)):
+    """Get a specific map point by ID"""
+    
+    point = db.query(models.MapPoint).filter(models.MapPoint.id == point_id).first()
+    if not point:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Map point not found"
+        )
+    
+    return point
+
+@router.put("/points/{point_id}", response_model=schemas.MapPointResponse)
+async def update_map_point(
+    point_id: int,
+    point_data: schemas.MapPointUpdate,
+    db: Session = Depends(get_db)
+):
+    """Update a map point"""
+    
+    point = db.query(models.MapPoint).filter(models.MapPoint.id == point_id).first()
+    if not point:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Map point not found"
+        )
+    
+    for field, value in point_data.dict(exclude_unset=True).items():
+        setattr(point, field, value)
+    
+    db.commit()
+    db.refresh(point)
+    return point
+
+@router.delete("/points/{point_id}")
+async def delete_map_point(point_id: int, db: Session = Depends(get_db)):
+    """Delete a map point"""
+    
+    point = db.query(models.MapPoint).filter(models.MapPoint.id == point_id).first()
+    if not point:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Map point not found"
+        )
+    
+    db.delete(point)
+    db.commit()
+    return {"message": "Map point deleted successfully"}
+
+@router.post("/points/search", response_model=List[schemas.MapPointResponse])
+async def search_map_points(
+    search_request: schemas.MapPointSearchRequest,
+    db: Session = Depends(get_db)
+):
+    """Advanced search for map points by city, type, and location"""
+    
+    query = db.query(models.MapPoint)
+    
+    # City filter (required)
+    query = query.filter(models.MapPoint.city.ilike(f"%{search_request.city}%"))
+    
+    # Optional filters
+    if search_request.country:
+        query = query.filter(models.MapPoint.country.ilike(f"%{search_request.country}%"))
+    
+    if search_request.point_type:
+        query = query.filter(models.MapPoint.point_type == search_request.point_type)
+    
+    if search_request.search_query:
+        search_filter = f"%{search_request.search_query}%"
+        query = query.filter(
+            models.MapPoint.name.ilike(search_filter) |
+            models.MapPoint.description.ilike(search_filter) |
+            models.MapPoint.address.ilike(search_filter)
+        )
+    
+    # Proximity search
+    if search_request.latitude and search_request.longitude and search_request.radius_km:
+        lat_delta = search_request.radius_km / 111.0
+        lng_delta = search_request.radius_km / (111.0 * math.cos(math.radians(search_request.latitude)))
+        
+        query = query.filter(
+            models.MapPoint.latitude.between(
+                search_request.latitude - lat_delta, 
+                search_request.latitude + lat_delta
+            ),
+            models.MapPoint.longitude.between(
+                search_request.longitude - lng_delta, 
+                search_request.longitude + lng_delta
+            )
+        )
+    
+    return query.limit(100).all()  # Limit results for performance
 
 # Map Routes endpoints
 @router.get("/{map_id}/routes/", response_model=List[schemas.MapRouteResponse])
@@ -312,3 +444,136 @@ async def get_map_cities(db: Session = Depends(get_db)):
         }
         for city in cities
     ]
+
+
+@router.get("/cities/search", response_model=List[dict])
+async def search_cities(
+    query: str = Query(..., description="City name to search for"),
+    db: Session = Depends(get_db)
+):
+    """Search for cities with existing map points"""
+    
+    # Search in both maps and map points for cities
+    map_cities = db.query(models.Map.city, models.Map.country).filter(
+        models.Map.city.ilike(f"%{query}%"),
+        models.Map.is_active == True
+    ).distinct().all()
+    
+    point_cities = db.query(models.MapPoint.city, models.MapPoint.country).filter(
+        models.MapPoint.city.ilike(f"%{query}%")
+    ).distinct().all()
+    
+    # Combine and deduplicate
+    all_cities = set(map_cities + point_cities)
+    
+    return [
+        {
+            "city": city[0] if city[0] else "",
+            "country": city[1] if city[1] else "",
+            "full_name": f"{city[0]}, {city[1]}" if city[0] and city[1] else city[0] or city[1] or ""
+        }
+        for city in all_cities
+        if city[0]  # Only include results with valid city names
+    ]
+
+
+# Hand-drawn canvas endpoints
+@router.post("/{map_id}/canvas/", response_model=schemas.HandDrawnCanvasResponse, status_code=status.HTTP_201_CREATED)
+async def create_hand_drawn_canvas(
+    map_id: int,
+    canvas_data: schemas.HandDrawnCanvasCreate,
+    db: Session = Depends(get_db)
+):
+    """Create or update a hand-drawn canvas for a map"""
+    
+    # Verify map exists
+    map_obj = db.query(models.Map).filter(models.Map.id == map_id).first()
+    if not map_obj:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Map not found"
+        )
+    
+    # Check if canvas already exists
+    existing_canvas = db.query(models.HandDrawnCanvas).filter(
+        models.HandDrawnCanvas.map_id == map_id
+    ).first()
+    
+    if existing_canvas:
+        # Update existing canvas
+        for field, value in canvas_data.dict(exclude_unset=True).items():
+            setattr(existing_canvas, field, value)
+        db.commit()
+        db.refresh(existing_canvas)
+        return existing_canvas
+    else:
+        # Create new canvas
+        canvas_dict = canvas_data.dict()
+        canvas_dict['map_id'] = map_id
+        db_canvas = models.HandDrawnCanvas(**canvas_dict)
+        db.add(db_canvas)
+        db.commit()
+        db.refresh(db_canvas)
+        return db_canvas
+
+
+@router.get("/{map_id}/canvas/", response_model=schemas.HandDrawnCanvasResponse)
+async def get_hand_drawn_canvas(map_id: int, db: Session = Depends(get_db)):
+    """Get the hand-drawn canvas for a map"""
+    
+    canvas = db.query(models.HandDrawnCanvas).filter(
+        models.HandDrawnCanvas.map_id == map_id
+    ).first()
+    
+    if not canvas:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Canvas not found for this map"
+        )
+    
+    return canvas
+
+
+@router.put("/{map_id}/canvas/", response_model=schemas.HandDrawnCanvasResponse)
+async def update_hand_drawn_canvas(
+    map_id: int,
+    canvas_data: schemas.HandDrawnCanvasUpdate,
+    db: Session = Depends(get_db)
+):
+    """Update a hand-drawn canvas for a map"""
+    
+    canvas = db.query(models.HandDrawnCanvas).filter(
+        models.HandDrawnCanvas.map_id == map_id
+    ).first()
+    
+    if not canvas:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Canvas not found for this map"
+        )
+    
+    for field, value in canvas_data.dict(exclude_unset=True).items():
+        setattr(canvas, field, value)
+    
+    db.commit()
+    db.refresh(canvas)
+    return canvas
+
+
+@router.delete("/{map_id}/canvas/")
+async def delete_hand_drawn_canvas(map_id: int, db: Session = Depends(get_db)):
+    """Delete a hand-drawn canvas for a map"""
+    
+    canvas = db.query(models.HandDrawnCanvas).filter(
+        models.HandDrawnCanvas.map_id == map_id
+    ).first()
+    
+    if not canvas:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Canvas not found for this map"
+        )
+    
+    db.delete(canvas)
+    db.commit()
+    return {"message": "Canvas deleted successfully"}

@@ -58,6 +58,9 @@ export interface MapPoint {
   latitude: number
   longitude: number
   address?: string
+  city?: string
+  country?: string
+  place_id?: string
   opening_hours?: string
   contact_info?: string
   image_url?: string
@@ -65,7 +68,50 @@ export interface MapPoint {
   priority: number
   instagram_worthy: boolean
   ar_content_url?: string
+  canvas_x?: number
+  canvas_y?: number
+  created_by?: string
+  is_verified: boolean
   created_at: string
+}
+
+export interface CreateMapPoint {
+  name: string
+  description?: string
+  point_type: string
+  latitude: number
+  longitude: number
+  address?: string
+  city?: string
+  country?: string
+  place_id?: string
+  opening_hours?: string
+  contact_info?: string
+  image_url?: string
+  icon_type?: string
+  priority?: number
+  instagram_worthy?: boolean
+  ar_content_url?: string
+  canvas_x?: number
+  canvas_y?: number
+  created_by?: string
+  is_verified?: boolean
+}
+
+export interface MapPointSearchRequest {
+  city: string
+  country?: string
+  point_type?: string
+  search_query?: string
+  latitude?: number
+  longitude?: number
+  radius_km?: number
+}
+
+export interface CitySearchResult {
+  city: string
+  country: string
+  full_name: string
 }
 
 export interface MapRoute {
@@ -131,6 +177,35 @@ export interface Map {
 
 export interface MapDetailResponse extends Map {
   reviews: MapReview[]
+  canvas?: HandDrawnCanvas
+}
+
+export interface HandDrawnCanvas {
+  id: number
+  map_id: number
+  canvas_data: string
+  canvas_width: number
+  canvas_height: number
+  background_image_url?: string
+  drawing_layers?: string
+  created_at: string
+  updated_at?: string
+}
+
+export interface CreateHandDrawnCanvas {
+  canvas_data: string
+  canvas_width?: number
+  canvas_height?: number
+  background_image_url?: string
+  drawing_layers?: string
+}
+
+export interface UpdateHandDrawnCanvas {
+  canvas_data?: string
+  canvas_width?: number
+  canvas_height?: number
+  background_image_url?: string
+  drawing_layers?: string
 }
 
 export interface MapListResponse {
@@ -279,16 +354,45 @@ export const mapsService = {
   // Get map points
   async getMapPoints(params?: {
     city?: string
+    country?: string
     point_type?: string
     instagram_worthy?: boolean
+    latitude?: number
+    longitude?: number
+    radius_km?: number
+    page?: number
+    per_page?: number
   }): Promise<MapPoint[]> {
-    const response = await api.get('/maps/points/', { params })
+    const response = await api.get('/maps/points/search', { params })
     return response.data
   },
 
   // Create a map point
-  async createMapPoint(pointData: Partial<MapPoint>): Promise<MapPoint> {
+  async createMapPoint(pointData: CreateMapPoint): Promise<MapPoint> {
     const response = await api.post('/maps/points/', pointData)
+    return response.data
+  },
+
+  // Update a map point
+  async updateMapPoint(pointId: number, pointData: Partial<CreateMapPoint>): Promise<MapPoint> {
+    const response = await api.put(`/maps/points/${pointId}`, pointData)
+    return response.data
+  },
+
+  // Delete a map point
+  async deleteMapPoint(pointId: number): Promise<void> {
+    await api.delete(`/maps/points/${pointId}`)
+  },
+
+  // Search map points
+  async searchMapPoints(searchRequest: MapPointSearchRequest): Promise<MapPoint[]> {
+    const response = await api.post('/maps/points/search', searchRequest)
+    return response.data
+  },
+
+  // Search cities
+  async searchCities(query: string): Promise<CitySearchResult[]> {
+    const response = await api.get('/maps/cities/search', { params: { query } })
     return response.data
   },
 
@@ -328,6 +432,27 @@ export const mapsService = {
   // Get cities with maps
   async getMapCities(): Promise<{ city: string; country: string; map_count: number }[]> {
     const response = await api.get('/maps/cities/')
+    return response.data
+  },
+
+  // Hand-drawn canvas endpoints
+  async createHandDrawnCanvas(mapId: number, canvasData: CreateHandDrawnCanvas): Promise<HandDrawnCanvas> {
+    const response = await api.post(`/maps/${mapId}/canvas/`, canvasData)
+    return response.data
+  },
+
+  async getHandDrawnCanvas(mapId: number): Promise<HandDrawnCanvas> {
+    const response = await api.get(`/maps/${mapId}/canvas/`)
+    return response.data
+  },
+
+  async updateHandDrawnCanvas(mapId: number, canvasData: UpdateHandDrawnCanvas): Promise<HandDrawnCanvas> {
+    const response = await api.put(`/maps/${mapId}/canvas/`, canvasData)
+    return response.data
+  },
+
+  async deleteHandDrawnCanvas(mapId: number): Promise<{ message: string }> {
+    const response = await api.delete(`/maps/${mapId}/canvas/`)
     return response.data
   },
 }

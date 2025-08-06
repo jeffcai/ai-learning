@@ -84,6 +84,16 @@ export default function MapsPage() {
             <span>🗺️ Custom routes included</span>
             <span>✨ AR filters available</span>
           </div>
+          
+          {/* Create Map Button */}
+          <div className="mt-8">
+            <a
+              href="/maps/create"
+              className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              ✏️ Create Your Own Map
+            </a>
+          </div>
         </div>
 
         {/* Filters */}

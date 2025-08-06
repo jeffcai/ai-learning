@@ -12,6 +12,8 @@ from app import models
 
 def create_tables():
     try:
+        print("Dropping existing tables...")
+        models.Base.metadata.drop_all(bind=engine)
         print("Creating database tables...")
         models.Base.metadata.create_all(bind=engine)
         print("Successfully created all tables!")
@@ -21,6 +23,12 @@ def create_tables():
         inspector = inspect(engine)
         tables = inspector.get_table_names()
         print(f"Tables created: {', '.join(tables)}")
+        
+        # Show columns for map_points_detail to verify schema
+        print("\nmap_points_detail table schema:")
+        columns = inspector.get_columns('map_points_detail')
+        for col in columns:
+            print(f"  {col['name']} ({col['type']})")
         
     except Exception as e:
         print(f"Error creating tables: {e}")
