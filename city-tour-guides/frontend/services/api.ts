@@ -455,6 +455,12 @@ export const mapsService = {
     const response = await api.delete(`/maps/${mapId}/canvas/`)
     return response.data
   },
+
+  // Associate points with a map
+  async associatePointsWithMap(mapId: number, pointIds: number[]): Promise<{ message: string; point_ids: number[] }> {
+    const response = await api.post(`/maps/${mapId}/points/associate`, { point_ids: pointIds })
+    return response.data
+  },
 }
 
 export const healthService = {

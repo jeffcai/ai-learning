@@ -262,3 +262,8 @@ class MapWithCanvasResponse(MapResponse):
 
 class MapDetailWithCanvasResponse(MapWithCanvasResponse):
     reviews: List[MapReviewResponse] = []
+
+
+# Request schema for associating points with maps
+class AssociatePointsRequest(BaseModel):
+    point_ids: List[int]

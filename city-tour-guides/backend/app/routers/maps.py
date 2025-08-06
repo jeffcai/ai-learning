@@ -577,3 +577,41 @@ async def delete_hand_drawn_canvas(map_id: int, db: Session = Depends(get_db)):
     db.delete(canvas)
     db.commit()
     return {"message": "Canvas deleted successfully"}
+
+
+@router.post("/{map_id}/points/associate")
+async def associate_points_with_map(
+    map_id: int,
+    point_ids: schemas.AssociatePointsRequest,
+    db: Session = Depends(get_db)
+):
+    """Associate existing points with a map"""
+    
+    # Check if map exists
+    db_map = db.query(models.Map).filter(models.Map.id == map_id).first()
+    if not db_map:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Map not found"
+        )
+    
+    # Get the points to associate
+    points = db.query(models.MapPoint).filter(
+        models.MapPoint.id.in_(point_ids.point_ids)
+    ).all()
+    
+    if len(points) != len(point_ids.point_ids):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Some points not found"
+        )
+    
+    # Associate points with the map (avoid duplicates)
+    for point in points:
+        if point not in db_map.points:
+            db_map.points.append(point)
+    
+    db.commit()
+    db.refresh(db_map)
+    
+    return {"message": f"Successfully associated {len(points)} points with map", "point_ids": point_ids.point_ids}

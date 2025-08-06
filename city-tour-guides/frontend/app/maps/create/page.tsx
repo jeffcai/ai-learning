@@ -162,9 +162,12 @@ export default function CreateHandDrawnMapPage() {
 
       await mapsService.createHandDrawnCanvas(createdMap.id, canvasPayload)
 
+      // Create all points and collect their IDs
+      const pointIds: number[] = []
+
       // Create canvas points in the database
       for (const point of mapPoints) {
-        await mapsService.createMapPoint({
+        const createdPoint = await mapsService.createMapPoint({
           name: point.name,
           description: point.description,
           point_type: point.type,
@@ -176,11 +179,12 @@ export default function CreateHandDrawnMapPage() {
           canvas_y: point.y,
           created_by: mapInfo.creator_name || 'Anonymous'
         })
+        pointIds.push(createdPoint.id)
       }
 
       // Create geographic points in the database
       for (const point of geographicPoints) {
-        await mapsService.createMapPoint({
+        const createdPoint = await mapsService.createMapPoint({
           name: point.name,
           description: point.description,
           point_type: point.point_type,
@@ -193,6 +197,12 @@ export default function CreateHandDrawnMapPage() {
           canvas_y: point.canvas_y,
           created_by: point.created_by || mapInfo.creator_name || 'Anonymous'
         })
+        pointIds.push(createdPoint.id)
+      }
+
+      // Associate all points with the map
+      if (pointIds.length > 0) {
+        await mapsService.associatePointsWithMap(createdMap.id, pointIds)
       }
 
       // Create routes in the database
