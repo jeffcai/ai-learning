@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic'
 import { MapDetailResponse, mapsService } from '@/services/api'
 import MapLegend from '@/components/MapLegend'
 import HandDrawnMapDisplay from '@/components/HandDrawnMapDisplay'
+import EnhancedMapWithOverlay from '@/components/EnhancedMapWithOverlay'
 import '@/styles/leaflet-custom.css'
 
 // Dynamically import MapDisplay to avoid SSR issues with Leaflet
@@ -111,43 +112,14 @@ export default function MapDetailPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Main Content */}
             <div className="lg:col-span-2">
-              {/* Hand-drawn Canvas */}
-              {map.canvas && (
-                <div className="bg-white rounded-lg shadow-md mb-6 overflow-hidden">
-                  <div className="p-4 border-b border-gray-200">
-                    <h2 className="text-xl font-bold text-gray-900">Hand-drawn Map</h2>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Original artistic map with custom routes and points of interest
-                    </p>
-                  </div>
-                  <div className="p-4">
-                    <HandDrawnMapDisplay 
-                      canvas={map.canvas}
-                      width={map.canvas.canvas_width}
-                      height={map.canvas.canvas_height}
-                      className="w-full"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Interactive Map */}
-              <div className="bg-white rounded-lg shadow-md mb-6 overflow-hidden">
-                <div className="p-4 border-b border-gray-200">
-                  <h2 className="text-xl font-bold text-gray-900">Interactive Map</h2>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Explore points of interest and routes. Click on markers and lines for details.
-                  </p>
-                </div>
-                <div className="p-4">
-                  <MapDisplay 
-                    points={map.points} 
-                    routes={map.routes}
-                    height="500px"
-                    className="map-container"
-                  />
-                </div>
-              </div>
+              {/* Enhanced Interactive Map with Overlay */}
+              <EnhancedMapWithOverlay
+                points={map.points} 
+                routes={map.routes}
+                canvas={map.canvas}
+                height="500px"
+                className="mb-6"
+              />
 
               {/* Map Image */}
               {map.map_image_url && (

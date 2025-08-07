@@ -44,9 +44,23 @@ Successfully implemented a comprehensive hand-drawn map creation feature for the
 
 - **HandDrawnMapDisplay**: Read-only canvas display component for viewing saved maps
 
+- **EnhancedMapDisplay**: ⭐ **NEW** - Interactive Leaflet map with hand-drawn canvas overlay support
+  - Shows hand-drawn canvas as overlay on geographic map
+  - Maintains full point and route interactivity
+  - Adjustable overlay opacity
+  - Toggle overlay on/off
+
+- **EnhancedMapWithOverlay**: ⭐ **NEW** - Complete map viewing solution with mode switching
+  - Three view modes: Geographic, Hand-drawn, and Overlay
+  - User controls for opacity and view switching
+  - Responsive design with statistics
+
 ### 3. Updated Components
 - **Maps Page**: Added "Create Your Own Map" button
-- **Map Detail Page**: Now displays hand-drawn canvas when available
+- **Map Detail Page**: ⭐ **ENHANCED** - Now uses EnhancedMapWithOverlay for combined viewing
+  - Shows hand-drawn canvas overlaid on interactive geographic map
+  - Users can switch between Geographic, Hand-drawn, and Overlay modes
+  - Full interactivity maintained in all modes
 - **API Service**: Extended with canvas-related endpoints
 
 ## Key Features
