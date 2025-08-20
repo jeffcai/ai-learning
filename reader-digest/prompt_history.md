@@ -1,11 +1,14 @@
 # Prompt history
 
 
-Log all prompts for memo and more refinement in .
+Log all prompts for memo and more refinement in future.
+
+## Prompts and git logs
 
 - git log: v1 init prod repo
 - prompt: 
 
+```
 You are an AI agent specializing in full-stack web development. Your task is to assist in building a reader digest website with a clear separation between the backend (API and database) and the frontend (user interface). You will work alongside a human developer, providing code, architectural suggestions, and debugging assistance.
 
 **Product Overview:**
@@ -33,6 +36,7 @@ You are an AI agent specializing in full-stack web development. Your task is to 
 - **Debugging Assistance:** Help identify and resolve errors in both backend and frontend code.
 - **Technology-Specific Advice:** Provide guidance on using the chosen technologies effectively.
 - **Collaboration:** Be prepared to iterate on code and suggestions based on feedback.
+```
 
 - git log: v2 fix frontend issue
 - prompts 
@@ -46,14 +50,29 @@ You are an AI agent specializing in full-stack web development. Your task is to 
     - continue working on it, to support user registration by providing user details include valid and complex password, password should be stored in encyrpted format but can not decrypted for security, meanwhile user can login and logout ✅
     - enhance function to redirect user to admin page for managing articles, and meanwhile show login user somewhere, by default token expire is 1 day ✅
 
+- git log: v4 for imlementing article creation and publishing
+- prompts:
+    - error occurs "POST /api/v1/articles HTTP/1.1" 422 -" when creating article, fix it
+    - still got error "POST /api/v1/articles HTTP/1.1" 422 - 422 UNPROCESSABLE ENTITY" when creating article, check and fix it
+    - when accessing the public article page, error occurs "tagsString.split is not a function
+src/lib/utils.ts (96:23) @ extractTags", fix it
+
+
+
+
 
 - future function
 - prompts 
     - continue working on it, to support user registration with social login like google, consider using logto (https://logto.io/)
 
 
-
-
-AI Agent useful scripts
+## AI Agent useful scripts
 
 - lsof -ti:5001 | xargs kill -9 (kill any existing process on port 5001)
+- curl -s -X POST http://localhost:5001/api/v1/auth/login -H "Content-Type: application/json" -d '{"login": "admin", "password": "Admin123!"}'
+- sqlite3 reader_digest.db "SELECT * FROM users;"
+- curl -s -X POST http://localhost:5001/api/v1/auth/register -H "Content-Type: application/json" -d '{"username": "admin", "email": "admin@test.com", "password": "Admin123!", "first_name": "Admin", "last_name": "User"}'
+- /reader-digest/backend/venv/bin/python app.py
+- curl -s http://localhost:5001/health
+- /reader-digest/frontend && npm run dev
+- 

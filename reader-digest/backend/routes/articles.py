@@ -25,11 +25,15 @@ def get_articles():
         date_filter = request.args.get('date')  # YYYY-MM-DD format
         tag_filter = request.args.get('tag')
         view_type = request.args.get('view', 'public')  # 'public' or 'own'
+        user_articles = request.args.get('user_articles', type=bool)
         
         # Base query
         query = Article.query
         
-        if view_type == 'own' and user_id:
+        if user_articles and user_id:
+            # User's own articles (including private ones) - for admin page
+            query = query.filter_by(user_id=user_id)
+        elif view_type == 'own' and user_id:
             # User's own articles (including private ones)
             query = query.filter_by(user_id=user_id)
         else:
@@ -83,23 +87,57 @@ def create_article():
         user_id = get_jwt_identity()
         data = request.get_json()
         
+        print(f"DEBUG: User ID: {user_id}, type: {type(user_id)}")
+        
+        # Convert user_id to integer if it's a string
+        if isinstance(user_id, str):
+            try:
+                user_id = int(user_id)
+                print(f"DEBUG: Converted user_id to int: {user_id}")
+            except ValueError:
+                print(f"DEBUG: Failed to convert user_id to int: {user_id}")
+                return jsonify({'error': 'Invalid user identity'}), 401
+        
+        print(f"DEBUG: Received data: {data}")
+        
         # Validate required fields
-        if not data.get('title') or not data.get('url'):
-            return jsonify({'error': 'Title and URL are required'}), 400
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
+            
+        if not data.get('title'):
+            return jsonify({'error': 'Title is required'}), 400
+            
+        if not data.get('content'):
+            return jsonify({'error': 'Content is required'}), 400
+        
+        # Process tags - convert list to JSON string if needed
+        tags = data.get('tags', [])
+        if isinstance(tags, list):
+            tags = json.dumps(tags)
+        elif not tags:
+            tags = json.dumps([])
         
         # Create new article
-        article = Article(
-            title=data['title'],
-            url=data['url'],
-            notes=data.get('notes', ''),
-            tags=data.get('tags', ''),
-            reading_date=datetime.strptime(data.get('reading_date', datetime.now().strftime('%Y-%m-%d')), '%Y-%m-%d').date(),
-            is_public=data.get('is_public', True),
-            user_id=user_id
-        )
-        
-        db.session.add(article)
-        db.session.commit()
+        try:
+            print(f"DEBUG: Creating article with user_id={user_id}")
+            article = Article()
+            article.title = data['title'].strip()
+            article.url = data.get('url', '').strip() if data.get('url') else None
+            article.content = data['content'].strip()
+            article.notes = data.get('notes', '').strip() if data.get('notes') else None
+            article.tags = tags
+            article.reading_date = datetime.strptime(data.get('reading_date', datetime.now().strftime('%Y-%m-%d')), '%Y-%m-%d').date()
+            article.is_public = data.get('is_public', True)
+            article.user_id = user_id
+            
+            print(f"DEBUG: Article object created: {article}")
+            
+            db.session.add(article)
+            db.session.commit()
+            print(f"DEBUG: Article saved successfully")
+        except Exception as create_error:
+            print(f"DEBUG: Error creating article: {create_error}")
+            raise create_error
         
         return jsonify({
             'message': 'Article created successfully',

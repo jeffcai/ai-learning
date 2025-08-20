@@ -15,8 +15,9 @@ export interface Article {
   id: number;
   title: string;
   url: string;
+  content?: string;
   notes?: string;
-  tags?: string;
+  tags?: string[] | string;  // Can be array from API or string from forms
   reading_date: string;
   is_public: boolean;
   user_id: number;

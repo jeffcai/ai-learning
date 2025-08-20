@@ -86,14 +86,20 @@ export const truncateText = (text: string, maxLength: number = 150) => {
   return text.slice(0, maxLength).trim() + '...';
 };
 
-export const extractTags = (tagsString: string) => {
-  if (!tagsString) return [];
+export const extractTags = (tagsInput: string | string[]) => {
+  if (!tagsInput) return [];
+  
+  // If it's already an array, return it
+  if (Array.isArray(tagsInput)) {
+    return tagsInput;
+  }
+  
+  // If it's a string, try to parse as JSON first
   try {
-    // Try to parse as JSON first
-    return JSON.parse(tagsString);
+    return JSON.parse(tagsInput);
   } catch {
     // If not JSON, split by comma
-    return tagsString.split(',').map(tag => tag.trim()).filter(Boolean);
+    return tagsInput.split(',').map(tag => tag.trim()).filter(Boolean);
   }
 };
 

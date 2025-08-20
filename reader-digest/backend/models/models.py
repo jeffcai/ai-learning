@@ -2,6 +2,7 @@ from database import db
 from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
+import json
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
@@ -57,7 +58,8 @@ class Article(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
-    url = db.Column(db.Text, nullable=False)
+    url = db.Column(db.Text, nullable=True)  # Make URL optional
+    content = db.Column(db.Text, nullable=False)  # Add content field
     notes = db.Column(db.Text, nullable=True)
     tags = db.Column(db.Text, nullable=True)  # JSON string of tags
     reading_date = db.Column(db.Date, nullable=False, default=datetime.utcnow().date())
@@ -72,12 +74,19 @@ class Article(db.Model):
     
     def to_dict(self):
         """Convert article to dictionary for JSON response"""
+        # Parse tags from JSON string
+        try:
+            tags = json.loads(self.tags) if self.tags else []
+        except (json.JSONDecodeError, TypeError):
+            tags = []
+        
         return {
             'id': self.id,
             'title': self.title,
             'url': self.url,
+            'content': self.content,
             'notes': self.notes,
-            'tags': self.tags,
+            'tags': tags,
             'reading_date': self.reading_date.isoformat() if self.reading_date else None,
             'is_public': self.is_public,
             'user_id': self.user_id,

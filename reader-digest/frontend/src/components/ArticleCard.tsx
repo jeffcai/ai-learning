@@ -10,7 +10,7 @@ interface ArticleCardProps {
 }
 
 const ArticleCard: React.FC<ArticleCardProps> = ({ article, viewMode, onArticleClick }) => {
-  const tags = extractTags(article.tags || '');
+  const tags = extractTags(article.tags || []);
   const domain = getDomainFromUrl(article.url);
 
   const handleClick = () => {

@@ -52,7 +52,7 @@ def register():
         db.session.commit()
         
         # Create access token
-        access_token = create_access_token(identity=user.id)
+        access_token = create_access_token(identity=str(user.id))
         
         return jsonify({
             'message': 'User registered successfully',
@@ -86,7 +86,7 @@ def login():
             return jsonify({'error': 'Account is disabled'}), 401
         
         # Create access token
-        access_token = create_access_token(identity=user.id)
+        access_token = create_access_token(identity=str(user.id))
         
         return jsonify({
             'message': 'Login successful',
