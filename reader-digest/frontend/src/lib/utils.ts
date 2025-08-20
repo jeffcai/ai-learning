@@ -43,15 +43,22 @@ export const getPreviousWeek = () => {
 
 // Auth utilities
 export const isAuthenticated = () => {
+  if (typeof window === 'undefined') {
+    return false; // Server-side, no cookies available
+  }
   return !!Cookies.get('access_token');
 };
 
 export const setAuthToken = (token: string) => {
-  Cookies.set('access_token', token, { expires: 7 }); // 7 days
+  if (typeof window !== 'undefined') {
+    Cookies.set('access_token', token, { expires: 7 }); // 7 days
+  }
 };
 
 export const removeAuthToken = () => {
-  Cookies.remove('access_token');
+  if (typeof window !== 'undefined') {
+    Cookies.remove('access_token');
+  }
 };
 
 // URL utilities

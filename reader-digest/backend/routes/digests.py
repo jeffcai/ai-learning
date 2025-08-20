@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from models.models import Digest, User, db
+from models.models import Digest, User
+from database import db
 from datetime import datetime, timedelta
 import json
 

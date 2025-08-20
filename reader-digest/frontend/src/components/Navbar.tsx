@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
@@ -9,7 +11,7 @@ interface NavbarProps {
 }
 
 const Navbar: React.FC<NavbarProps> = ({ className }) => {
-  const { user, logout } = useAuth();
+  const { user, logout, isLoading } = useAuth();
 
   return (
     <nav className={cn("bg-white shadow-sm border-b", className)}>

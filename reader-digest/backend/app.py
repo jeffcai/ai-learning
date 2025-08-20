@@ -1,18 +1,11 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from flask_jwt_extended import JWTManager
-from flask_login import LoginManager
 from dotenv import load_dotenv
 import os
+from database import db, jwt, login_manager
 
 # Load environment variables
 load_dotenv()
-
-# Initialize extensions
-db = SQLAlchemy()
-jwt = JWTManager()
-login_manager = LoginManager()
 
 def create_app():
     app = Flask(__name__)
@@ -42,6 +35,11 @@ def create_app():
     app.register_blueprint(digests_bp, url_prefix='/api/v1/digests')
     app.register_blueprint(users_bp, url_prefix='/api/v1/users')
     
+    # Add health check route
+    @app.route('/health')
+    def health_check():
+        return {'status': 'OK', 'message': 'Flask app is running'}
+    
     # Create tables
     with app.app_context():
         db.create_all()
@@ -50,4 +48,4 @@ def create_app():
 
 if __name__ == '__main__':
     app = create_app()
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5001)

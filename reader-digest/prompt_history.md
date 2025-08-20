@@ -1,5 +1,10 @@
+# Prompt history
+
+
+Log all prompts for memo and more refinement in .
 
 - git log: v1 init prod repo
+- prompt: 
 
 You are an AI agent specializing in full-stack web development. Your task is to assist in building a reader digest website with a clear separation between the backend (API and database) and the frontend (user interface). You will work alongside a human developer, providing code, architectural suggestions, and debugging assistance.
 
@@ -29,4 +34,14 @@ You are an AI agent specializing in full-stack web development. Your task is to 
 - **Technology-Specific Advice:** Provide guidance on using the chosen technologies effectively.
 - **Collaboration:** Be prepared to iterate on code and suggestions based on feedback.
 
+- git log: v2 fix frontend issue
+- prompts 
+    - error occurs when accessing the localhost:3000, fix it
+    - "Attempted to call useAuth() from the server but useAuth is on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component."
+    - still not working, fix issue "Cannot find module 'autoprefixer'"
+    - fix issue "The current Flask app is not registered with this 'SQLAlchemy' instance. Did you forget to call 'init_app', or did you create multiple 'SQLAlchemy' instances?"
 
+
+AI Agent useful scripts
+
+- lsof -ti:5001 | xargs kill -9 (kill any existing process on port 5001)
