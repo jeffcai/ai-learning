@@ -1,1 +1,0 @@
-# Reader Digest Backend
