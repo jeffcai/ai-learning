@@ -57,6 +57,13 @@ export const authAPI = {
   getProfile: () => api.get('/auth/me'),
 
   logout: () => api.post('/auth/logout'),
+
+  // New validation endpoints
+  checkAvailability: (field: string, value: string) =>
+    api.post('/auth/check-availability', { field, value }),
+
+  validatePassword: (password: string) =>
+    api.post('/auth/validate-password', { password }),
 };
 
 // Articles API

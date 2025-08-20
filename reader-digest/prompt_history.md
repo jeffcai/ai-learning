@@ -41,9 +41,17 @@ You are an AI agent specializing in full-stack web development. Your task is to 
     - still not working, fix issue "Cannot find module 'autoprefixer'"
     - fix issue "The current Flask app is not registered with this 'SQLAlchemy' instance. Did you forget to call 'init_app', or did you create multiple 'SQLAlchemy' instances?"
 
-- git log: v3 to be done
+- git log: v3 support user registration, login and logout
+- prompts 
+    - continue working on it, to support user registration by providing user details include valid and complex password, password should be stored in encyrpted format but can not decrypted for security, meanwhile user can login and logout
+
+
+- future function
 - prompts 
     - continue working on it, to support user registration with social login like google, consider using logto (https://logto.io/)
+
+
+
 
 AI Agent useful scripts
 
