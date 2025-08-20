@@ -24,7 +24,7 @@ def create_app():
     login_manager.init_app(app)
     
     # Enable CORS
-    CORS(app, origins=["http://localhost:3000"])  # Allow frontend origin
+    CORS(app, origins=["http://localhost:3000", "http://localhost:3001"])  # Allow frontend origins
     
     # Import and register blueprints
     from routes.auth import auth_bp

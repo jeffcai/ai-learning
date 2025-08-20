@@ -43,8 +43,8 @@ You are an AI agent specializing in full-stack web development. Your task is to 
 
 - git log: v3 support user registration, login and logout
 - prompts 
-    - continue working on it, to support user registration by providing user details include valid and complex password, password should be stored in encyrpted format but can not decrypted for security, meanwhile user can login and logout
-    - enhance function to redirect user to admin page for managing articles, and meanwhile show login user somewhere, by default token expire is 1 day
+    - continue working on it, to support user registration by providing user details include valid and complex password, password should be stored in encyrpted format but can not decrypted for security, meanwhile user can login and logout ✅
+    - enhance function to redirect user to admin page for managing articles, and meanwhile show login user somewhere, by default token expire is 1 day ✅
 
 
 - future function
