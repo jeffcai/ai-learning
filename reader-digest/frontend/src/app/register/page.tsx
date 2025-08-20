@@ -167,8 +167,10 @@ export default function RegisterPage() {
     setIsLoading(true);
     
     try {
-      await register(formData);
-      router.push('/dashboard');
+      const result = await register(formData);
+      if (result.success) {
+        router.push('/admin');
+      }
     } catch (error: any) {
       console.error('Registration error:', error);
       

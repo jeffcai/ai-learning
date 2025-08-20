@@ -69,8 +69,10 @@ export default function LoginPage() {
     setIsLoading(true);
     
     try {
-      await login(formData);
-      router.push('/dashboard');
+      const result = await login(formData);
+      if (result.success) {
+        router.push('/admin');
+      }
     } catch (error: any) {
       console.error('Login error:', error);
       

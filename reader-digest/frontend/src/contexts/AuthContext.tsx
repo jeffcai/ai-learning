@@ -8,14 +8,14 @@ import { isAuthenticated, setAuthToken, removeAuthToken } from '@/lib/utils';
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
-  login: (loginData: { login: string; password: string }) => Promise<void>;
+  login: (loginData: { login: string; password: string }) => Promise<{ success: boolean; user: any }>;
   register: (registerData: {
     username: string;
     email: string;
     password: string;
     first_name?: string;
     last_name?: string;
-  }) => Promise<void>;
+  }) => Promise<{ success: boolean; user: any }>;
   logout: () => void;
   refreshUser: () => Promise<void>;
 }
@@ -63,6 +63,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       setAuthToken(access_token);
       setUser(userData);
+      
+      // Return success so components can handle redirect
+      return { success: true, user: userData };
     } catch (error) {
       throw error;
     }
@@ -81,6 +84,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       setAuthToken(access_token);
       setUser(userData);
+      
+      // Return success so components can handle redirect
+      return { success: true, user: userData };
     } catch (error) {
       throw error;
     }
