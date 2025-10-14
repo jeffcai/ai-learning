@@ -60,3 +60,5 @@ llm
 
 openai
 httpx[socks]>=0.25.0
+
+tiktoken>=0.12.0
