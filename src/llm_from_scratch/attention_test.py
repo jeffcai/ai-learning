@@ -10,6 +10,7 @@ inputs = torch.tensor(
 )
 
 # the second input is the query token and we compute dot products with all tokens as the intermediate attention scores
+# how to compute attention scores for a single query? it's simply the dot product between the query vector and each of the input vectors
 query = inputs[1] # journey embedding
 attn_scores_2 = torch.empty(inputs.shape[0])
 for i, x_i in enumerate(inputs):
@@ -40,7 +41,7 @@ attn_weights_2 = torch.softmax(attn_scores_2, dim=0)
 print("Attention weights:", attn_weights_2)
 print("Sum:", attn_weights_2.sum())
 
-# calculate the context vector as the weighted sum of the input vectors
+# How to calculate the context vector? it's to calculate the context vector as the weighted sum of the input vectors.
 # The context vector is a weighted sum of the input vectors, where the weights are given by the attention weights. 
 # This allows the model to focus on the most relevant parts of the input when making predictions.
 # The context vector captures the relevant information from the entire input sequence,
@@ -76,3 +77,19 @@ all_context_vecs = attn_weights @ inputs
 print(all_context_vecs)
 
 print("Previous 2nd context vector:", context_vec_2)
+
+# how computing the attention weights step by step implementing trainable weights?
+d_k = inputs.shape[1]  # dimension of the input vectors
+W_q = torch.nn.Parameter(torch.randn(d_k, d_k))  # query weight matrix
+W_k = torch.nn.Parameter(torch.randn(d_k, d_k))  # key weight matrix
+W_v = torch.nn.Parameter(torch.randn(d_k, d_k))  # value weight matrix
+
+def compute_attention_weights(inputs):
+    """Compute attention weights for all queries in inputs"""
+    queries = inputs @ W_q
+    keys = inputs @ W_k
+    values = inputs @ W_v
+
+    attn_scores = queries @ keys.T / (d_k ** 0.5)
+    attn_weights = torch.softmax(attn_scores, dim=-1)
+    return attn_weights, values
