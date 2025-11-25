@@ -78,7 +78,34 @@ print(all_context_vecs)
 
 print("Previous 2nd context vector:", context_vec_2)
 
+x_2 = inputs[1]
+# dimensions for queries, keys, and values
+d_in = inputs.shape[1]
+d_out = 2
+
+# initialize random weights for queries, keys, and values
+torch.manual_seed(123)
+# the last parameter requires_grad=False indicates these weights are not trainable for this example
+W_query = torch.nn.Parameter(torch.rand(d_in, d_out), requires_grad=False)
+W_key = torch.nn.Parameter(torch.rand(d_in, d_out), requires_grad=False)
+W_value = torch.nn.Parameter(torch.rand(d_in, d_out), requires_grad=False)
+
+# compute queries, keys, and values for the second input
+query_2 = x_2 @ W_query
+key_2 = x_2 @ W_key
+value_2 = x_2 @ W_value
+
+# compute attention scores for the second query against all keys
+keys = inputs @ W_key
+values = inputs @ W_value
+print("keys.shape:", keys.shape)
+print("values.shape:", values.shape)
+
 # how computing the attention weights step by step implementing trainable weights?
+# what's the difference between queries, keys, and values? 
+# Queries are the vectors we want to find relevant information for, 
+# keys are the vectors we compare against to find relevance, 
+# and values are the vectors we use to compute the output based on the attention weights.
 d_k = inputs.shape[1]  # dimension of the input vectors
 W_q = torch.nn.Parameter(torch.randn(d_k, d_k))  # query weight matrix
 W_k = torch.nn.Parameter(torch.randn(d_k, d_k))  # key weight matrix
