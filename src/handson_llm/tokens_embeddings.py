@@ -9,6 +9,21 @@
 # A vector (list of floating-point numbers) that represents the semantic meaning of a token.
 # Tokens with similar meanings will have embeddings that are "close" to each other in vector space.
 
+# what's Word2Vec?
+# A popular algorithm (by Google, 2013) to create word embeddings.
+# Core Idea: "You shall know a word by the company it keeps."
+# If two words appear in similar contexts (e.g., "The [cat] sat" and "The [dog] sat"), they are semantically similar.
+#
+# How it works (Simplified):
+# It trains a shallow neural network on a large corpus of text to do one of two tasks:
+# 1. CBOW (Continuous Bag of Words): Predict the missing word based on surrounding context words.
+#    - Input: "The", "cat", "on", "the", "mat" -> Target: "sat"
+# 2. Skip-gram: Predict the surrounding context words based on a single target word.
+#    - Input: "sat" -> Target: "The", "cat", "on", "the", "mat"
+#
+# The "weights" of this trained network become the word embeddings.
+# Famous Result: Vector arithmetic works! (King - Man + Woman ≈ Queen).
+
 # how to tokenize text and understand tokens?
 # Tokenization is the process of converting raw text into a sequence of tokens.
 
