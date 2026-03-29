@@ -1,0 +1,24 @@
+graph BT
+  ai["@mariozechner/pi-ai"]
+  tui["@mariozechner/pi-tui"]
+
+  agent["@mariozechner/pi-agent-core"]
+  coding["@mariozechner/pi-coding-agent"]
+  webui["@mariozechner/pi-web-ui"]
+  mom["@mariozechner/pi-mom"]
+  pods["@mariozechner/pi"]
+
+  agent --> ai
+
+  coding --> agent
+  coding --> ai
+  coding --> tui
+
+  webui --> ai
+  webui --> tui
+
+  mom --> coding
+  mom --> agent
+  mom --> ai
+
+  pods --> agent

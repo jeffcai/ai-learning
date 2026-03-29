@@ -1,0 +1,27 @@
+sequenceDiagram
+    participant U as App / Caller
+    participant M1 as Source model
+    participant A as AssistantMessage history
+    participant M2 as Target model
+    participant T as transform-messages.ts
+    participant C as Target converter
+    participant V as Target provider API
+
+    U->>M1: complete(sourceModel, context)
+    M1-->>A: assistant message with text / thinking / tool calls / signatures
+
+    U->>M2: stream(targetModel, contextWithPriorHistory)
+    M2->>T: transformMessages(messages, targetModel, normalizeToolCallId)
+
+    T->>T: keep same-model blocks unchanged
+    T->>T: convert foreign thinking blocks to plain text or drop opaque redacted thinking
+    T->>T: normalize tool call IDs for target API limits
+    T->>T: strip provider-specific thought signatures when invalid cross-model
+    T->>T: synthesize missing toolResult messages for orphaned tool calls
+    T->>T: skip errored or aborted assistant turns
+    T-->>C: replay-safe message list
+
+    C->>C: map replay-safe messages to target provider payload
+    C->>V: send transformed history
+    V-->>M2: target-model response
+    M2-->>U: normalized AssistantMessageEventStream

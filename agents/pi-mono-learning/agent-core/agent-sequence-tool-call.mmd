@@ -1,0 +1,67 @@
+sequenceDiagram
+    participant U as App/UI
+    participant A as Agent
+    participant L as Agent Loop
+    participant X as transformContext/convertToLlm
+    participant P as streamFn / pi-ai Provider
+    participant T as Tool
+    participant S as Subscribers
+
+    U->>A: prompt("Read config.json")
+    A->>A: normalize input to user AgentMessage
+    A->>L: runAgentLoop(prompts, context, config)
+
+    L-->>S: agent_start
+    L-->>S: turn_start
+    L-->>S: message_start(user)
+    L-->>S: message_end(user)
+
+    L->>X: transformContext(messages)
+    X-->>L: AgentMessage list
+    L->>X: convertToLlm(messages)
+    X-->>L: Message list
+    L->>P: stream(model, llmContext, options)
+
+    P-->>L: start(partial assistant)
+    L-->>S: message_start(assistant partial)
+
+    loop streaming deltas
+        P-->>L: text/toolcall delta
+        L-->>S: message_update(partial assistant)
+        A->>A: update streamMessage
+    end
+
+    P-->>L: done(final assistant)
+    L-->>S: message_end(assistant)
+    A->>A: append assistant to state.messages
+
+    L->>L: detect toolCall blocks
+    L-->>S: tool_execution_start(id,name,args)
+    L->>L: validate args + beforeToolCall
+    L->>T: execute(toolCallId, args, signal, onUpdate)
+
+    opt tool streams progress
+        T-->>L: partial tool result
+        L-->>S: tool_execution_update(...)
+    end
+
+    T-->>L: final tool result
+    L->>L: afterToolCall
+    L-->>S: tool_execution_end(...)
+    L-->>S: message_start(toolResult)
+    L-->>S: message_end(toolResult)
+    A->>A: append toolResult to state.messages
+
+    L-->>S: turn_end(assistant, toolResults)
+
+    L-->>S: turn_start
+    L->>X: transformContext + convertToLlm
+    L->>P: stream(next turn with toolResult)
+
+    P-->>L: start/delta/done
+    L-->>S: message_start/update/end(assistant)
+    A->>A: append final assistant
+
+    L-->>S: turn_end(final assistant, no tool results)
+    L-->>S: agent_end(newMessages)
+    A->>A: isStreaming = false

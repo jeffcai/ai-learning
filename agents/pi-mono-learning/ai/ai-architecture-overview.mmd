@@ -1,0 +1,47 @@
+flowchart TB
+    App["Application / SDK / CLI"] -->|getModel provider model| Models["models.ts\nmodel registry facade"]
+    Models --> Generated["models.generated.ts\nauto-generated model catalog"]
+
+    App -->|stream / complete / streamSimple / completeSimple| Public["stream.ts public API"]
+    Public --> ApiRegistry["api-registry.ts\nAPI provider registry"]
+    Public --> Auth["env-api-keys.ts\nenv auth lookup"]
+
+    ApiRegistry --> Builtins["providers/register-builtins.ts\nbuilt-in API registration"]
+    Builtins --> Lazy["lazy provider loaders\nimport provider module on first use"]
+
+    Lazy --> OpenAIResponses["openai-responses.ts\n+ openai-responses-shared.ts"]
+    Lazy --> OpenAICompletions["openai-completions.ts"]
+    Lazy --> Anthropic["anthropic.ts"]
+    Lazy --> Google["google.ts / google-vertex.ts / google-gemini-cli.ts\n+ google-shared.ts"]
+    Lazy --> Mistral["mistral.ts"]
+    Lazy --> Bedrock["amazon-bedrock.ts"]
+    Lazy --> Azure["azure-openai-responses.ts"]
+    Lazy --> Codex["openai-codex-responses.ts"]
+
+    Public --> EventStream["AssistantMessageEventStream\nutils/event-stream.ts"]
+    OpenAIResponses --> EventStream
+    OpenAICompletions --> EventStream
+    Anthropic --> EventStream
+    Google --> EventStream
+    Mistral --> EventStream
+    Bedrock --> EventStream
+    Azure --> EventStream
+    Codex --> EventStream
+
+    OpenAIResponses --> Transform["providers/transform-messages.ts\ncross-provider replay normalization"]
+    OpenAICompletions --> Transform
+    Anthropic --> Transform
+    Google --> Transform
+    Mistral --> Transform
+    Bedrock --> Transform
+    Azure --> Transform
+    Codex --> Transform
+
+    OpenAIResponses --> Validation["utils/validation.ts\ntool arg validation helper"]
+    OpenAICompletions --> Validation
+    Anthropic --> Validation
+    Google --> Validation
+
+    OAuth["utils/oauth/index.ts\nOAuth provider registry"] --> App
+
+    Generator["scripts/generate-models.ts"] --> Generated

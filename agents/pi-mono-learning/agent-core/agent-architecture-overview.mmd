@@ -1,0 +1,33 @@
+flowchart TB
+    App["Application / UI"] -->|prompt continue steer followUp| Agent["Agent class<br/>src/agent.ts"]
+    App -->|subscribe| Events["AgentEvent listeners"]
+
+    Agent --> State["AgentState<br/>messages, streamMessage, pendingToolCalls, error"]
+    Agent --> Queues["Steering queue<br/>Follow-up queue"]
+    Agent --> Config["AgentLoopConfig"]
+    Agent --> Loop["runAgentLoop / runAgentLoopContinue<br/>src/agent-loop.ts"]
+
+    Loop --> Transform["transformContext<br/>optional"]
+    Transform --> Convert["convertToLlm"]
+    Convert --> LlmContext["LLM Context<br/>systemPrompt + message array + tools"]
+
+    LlmContext --> StreamFn["streamFn<br/>streamSimple or streamProxy"]
+    StreamFn --> Provider["@mariozechner/pi-ai provider stream"]
+
+    Provider -->|start/delta/done| Loop
+    Loop -->|message_start/update/end| Agent
+    Agent --> Events
+
+    Loop --> ToolDetect["Detect toolCall blocks"]
+    ToolDetect --> ToolExec["Tool execution engine"]
+
+    ToolExec --> Preflight["validate args<br/>beforeToolCall"]
+    Preflight --> ToolImpl["AgentTool.execute"]
+    ToolImpl --> Postprocess["afterToolCall"]
+    Postprocess --> ToolMsg["toolResult message"]
+
+    ToolMsg --> Loop
+    Loop --> Agent
+    Agent --> State
+
+    Queues --> Loop

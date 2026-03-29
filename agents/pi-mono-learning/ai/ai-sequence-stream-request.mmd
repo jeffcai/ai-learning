@@ -1,0 +1,51 @@
+sequenceDiagram
+    participant U as App / Caller
+    participant M as models.ts
+    participant S as stream.ts
+    participant R as api-registry.ts
+    participant B as register-builtins.ts
+    participant P as Provider module
+    participant X as transform-messages / shared converters
+    participant V as Provider SDK / HTTP API
+    participant E as AssistantMessageEventStream
+
+    U->>M: getModel(provider, modelId)
+    M-->>U: Model metadata
+
+    U->>S: streamSimple(model, context, options)
+    S->>R: getApiProvider(model.api)
+    R-->>S: registered provider wrapper
+    S->>B: lazy streamSimple wrapper
+
+    alt first call for this API
+        B->>P: dynamic import(provider module)
+        P-->>B: streamSimple + stream implementation
+    end
+
+    B->>P: streamSimple(model, context, options)
+    P->>P: resolve auth and normalize simple options
+    P->>P: build provider-specific options
+    P->>X: transform stored messages for target API/model
+    X-->>P: transformed messages
+    P->>P: convert messages/tools to provider payload
+    P->>V: start provider stream request
+    P->>E: push start(partial assistant)
+
+    loop provider streaming events
+        V-->>P: text / thinking / tool call chunks + usage
+        P->>P: update partial AssistantMessage
+        P->>E: push text_delta / thinking_delta / toolcall_delta
+    end
+
+    V-->>P: completion or provider error
+    alt success
+        P->>P: finalize usage + stopReason
+        P->>E: push done(final assistant)
+    else failure or abort
+        P->>P: synthesize assistant error message
+        P->>E: push error(partial/final assistant)
+    end
+
+    E-->>U: async iterable events
+    U->>E: result()
+    E-->>U: final AssistantMessage

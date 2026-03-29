@@ -1,0 +1,27 @@
+sequenceDiagram
+    participant Dev as Developer / Release workflow
+    participant G as scripts/generate-models.ts
+    participant MD as models.dev API
+    participant OR as OpenRouter API
+    participant VG as Vercel AI Gateway API
+    participant F as src/models.generated.ts
+    participant M as models.ts
+
+    Dev->>G: npm run generate-models
+    G->>MD: fetch tool-capable provider catalogs
+    G->>OR: fetch OpenRouter models
+    G->>VG: fetch AI Gateway models
+
+    MD-->>G: provider model metadata
+    OR-->>G: routed model metadata
+    VG-->>G: gateway model metadata
+
+    G->>G: normalize to Model<Api>
+    G->>G: assign api/provider/baseUrl/compat
+    G->>G: apply overrides, add missing static models, duplicate Azure/OpenAI variants
+    G->>G: deduplicate by provider + model id
+    G->>F: write MODELS constant
+
+    Dev->>M: import getModel / getModels / getProviders
+    M->>F: load generated catalog on module init
+    M-->>Dev: typed model lookup and cost metadata

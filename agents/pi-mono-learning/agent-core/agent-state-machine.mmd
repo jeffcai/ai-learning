@@ -1,0 +1,34 @@
+stateDiagram-v2
+    [*] --> Idle
+
+    Idle --> Starting : prompt()/continue()
+    Starting --> TurnActive : agent_start + turn_start
+
+    state TurnActive {
+        [*] --> InjectPendingMessages
+        InjectPendingMessages --> StreamingAssistant
+        StreamingAssistant --> StreamingAssistant : message_update
+        StreamingAssistant --> AssistantCompleted : message_end
+
+        AssistantCompleted --> ToolPreparation : tool calls present
+        AssistantCompleted --> TurnFinished : no tool calls
+
+        ToolPreparation --> ToolExecuting
+        ToolExecuting --> ToolExecuting : tool_execution_update
+        ToolExecuting --> ToolFinalized : tool_execution_end
+        ToolFinalized --> TurnFinished : tool results emitted
+    }
+
+    TurnActive --> SteeringCheck : turn_end
+    SteeringCheck --> TurnActive : steering messages available
+    SteeringCheck --> FollowUpCheck : no steering
+
+    FollowUpCheck --> TurnActive : follow-up messages available
+    FollowUpCheck --> Completed : no follow-up messages
+
+    Completed --> Idle : agent_end
+
+    TurnActive --> ErrorState : assistant stopReason=error
+    TurnActive --> AbortedState : assistant stopReason=aborted
+    ErrorState --> Idle : agent_end
+    AbortedState --> Idle : agent_end
